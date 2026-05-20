@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/MALIBURGER/INVENTARIO/INVENTARIO.iml" filepath="$PROJECT_DIR$/MALIBURGER/INVENTARIO/INVENTARIO.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/MALIBURGERv1805.iml" filepath="$PROJECT_DIR$/.idea/MALIBURGERv1805.iml" />
+    </modules>
+  </component>
+</project>
