@@ -2,7 +2,14 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Annotation profile for ms-venta" enabled="true">
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="api-gateway" />
+        <module name="eureka-server" />
+      </profile>
+      <profile name="Annotation profile for msSecurity" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -10,25 +17,28 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
         </processorPath>
         <module name="ms-venta" />
+        <module name="msSecurity" />
         <module name="ms-carrito" />
         <module name="MALIBURGER" />
+        <module name="ms-inventario (1)" />
         <module name="ms-inventario" />
       </profile>
-      <profile name="Maven default annotation processors profile" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <module name="api-gateway" />
-      </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="gatewayy2" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="MALIBURGER" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
+      <module name="eureka-server" options="-parameters" />
+      <module name="gatewayy2" options="-parameters" />
       <module name="ms-carrito" options="-parameters" />
       <module name="ms-inventario" options="-parameters" />
+      <module name="ms-inventario (1)" options="-parameters" />
       <module name="ms-venta" options="-parameters" />
+      <module name="msSecurity" options="-parameters" />
     </option>
   </component>
 </project>

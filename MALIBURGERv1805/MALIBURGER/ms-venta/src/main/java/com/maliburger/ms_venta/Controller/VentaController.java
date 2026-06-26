@@ -7,6 +7,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.stream.Collectors;
+
+// Imports de HATEOAS
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.CollectionModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/api/venta")
@@ -15,16 +21,37 @@ public class VentaController {
 
     private final VentaService ventaService;
 
-    //registra una venta nueva
+    // Registra una venta nueva
     @PostMapping("/registrar")
-    public ResponseEntity<Venta> registrarVenta(@RequestBody VentaRequest request) {
+    public ResponseEntity<EntityModel<Venta>> registrarVenta(@RequestBody VentaRequest request) {
         Venta nuevaVenta = ventaService.registrarVenta(request.getIdUsuario());
-        return ResponseEntity.ok(nuevaVenta);
+
+        EntityModel<Venta> modelo = EntityModel.of(nuevaVenta);
+
+        // Enlaces de navegación post-venta
+        modelo.add(linkTo(methodOn(VentaController.class).registrarVenta(request)).withSelfRel());
+        modelo.add(linkTo(methodOn(VentaController.class).obtenerHistorial(request.getIdUsuario())).withRel("ver-historial"));
+        modelo.add(linkTo(methodOn(VentaController.class).obtenerHistorial(request.getIdUsuario())).withRel("ir-al-catalogo")); // Redirección lógica
+
+        return ResponseEntity.ok(modelo);
     }
 
-    //ve el historial según el id del usuario
+    // Ve el historial según el id del usuario
     @GetMapping("/historial/{idUsuario}")
-    public ResponseEntity<List<Venta>> obtenerHistorial(@PathVariable Long idUsuario) {
-        return ResponseEntity.ok(ventaService.obtenerHistorial(idUsuario));
+    public ResponseEntity<CollectionModel<EntityModel<Venta>>> obtenerHistorial(@PathVariable Long idUsuario) {
+        List<Venta> listaVentas = ventaService.obtenerHistorial(idUsuario);
+
+        // Convertimos cada venta en un EntityModel
+        List<EntityModel<Venta>> listaConEnlaces = listaVentas.stream()
+                .map(venta -> EntityModel.of(venta,
+                        linkTo(methodOn(VentaController.class).obtenerHistorial(idUsuario)).withSelfRel()
+                ))
+                .collect(Collectors.toList());
+
+        // Agrupamos en una colección
+        CollectionModel<EntityModel<Venta>> modeloColeccion = CollectionModel.of(listaConEnlaces);
+        modeloColeccion.add(linkTo(methodOn(VentaController.class).obtenerHistorial(idUsuario)).withSelfRel());
+
+        return ResponseEntity.ok(modeloColeccion);
     }
 }

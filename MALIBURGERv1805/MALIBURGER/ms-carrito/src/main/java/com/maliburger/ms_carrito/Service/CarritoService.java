@@ -31,7 +31,7 @@ public class CarritoService {
 
     public Carrito agregarItem(Long idUsuario, Long idBurger, Integer cantidad) {
 
-        String urlCatalogo = "http://localhost:8080/api/maliburger/" + idBurger;
+        String urlCatalogo = "http://localhost:8081/api/maliburger/" + idBurger;
 
        DTOburger hamburguesaOficial = restTemplate.getForObject(urlCatalogo, DTOburger.class);
 

@@ -1,0 +1,55 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: maliburger
+
+  datasource:
+    url: jdbc:oracle:thin:@maliburgir_high?TNS_ADMIN=/Users/karensita/Desktop/wallet/Wallet_Maliburgir
+    # createDatabaseIfNotExist=true&serverTimezone=UTC
+    username: FullStack_02
+    password: Duocuc12345.
+    # driver-class-name: com.mysql.cj.jdbc.Driver
+
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 1
+      connection-timeout: 20000
+      idle-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+        format_sql: true
+
+  flyway:
+    enabled: false
+
+logging:
+  level:
+    org:
+      hibernate: DEBUG
+    java:
+      sql: DEBUG
+
+  eureka:
+    client:
+      service-url:
+        defaultZone: http://localhost:8761/eureka/
+    instance:
+      # Esto ayuda a diferenciarlos si en el futuro decides levantar 2 carritos al mismo tiempo
+      instance-id: ${spring.application.name}:${random.value}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+  server:
+    forward-headers-strategy: framework

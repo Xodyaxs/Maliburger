@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # 1. Nuestro Directorio
+  eureka-server:
+    image: maliburger/eureka-server:1.0
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - maliburger-net
+
+  # 2. Nuestra Puerta de Entrada
+  api-gateway:
+    image: maliburger/api-gateway:1.0
+    container_name: api-gateway
+    ports:
+      - "9000:9000"
+    depends_on:
+      - eureka-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+    networks:
+      - maliburger-net
+
+  # 3. Nuestro Guardia de Seguridad
+  ms-seguridad:
+    image: maliburger/ms-seguridad:1.0
+    container_name: ms-seguridad
+    ports:
+      - "8090:8090"
+    depends_on:
+      - eureka-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+    networks:
+      - maliburger-net
+
+  # 4. Microservicio de Inventario
+  ms-inventario:
+    image: maliburger/ms-inventario:1.0
+    container_name: ms-inventario
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+    command: ["--eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/", "--eureka.instance.preferIpAddress=true"]
+    networks:
+      - maliburger-net
+    volumes:
+      - "/Users/karensita/Desktop/wallet/Wallet_Maliburgir:/Users/karensita/Desktop/wallet/Wallet_Maliburgir"
+
+  # 5. Microservicio de Catálogo
+  ms-catalogo:
+    image: maliburger/ms-catalogo:1.0
+    container_name: ms-catalogo
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+    command: ["--eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/", "--eureka.instance.preferIpAddress=true"]
+    networks:
+      - maliburger-net
+    volumes:
+      - "/Users/karensita/Desktop/wallet/Wallet_Maliburgir:/Users/karensita/Desktop/wallet/Wallet_Maliburgir"
+
+  # 6. Microservicio de Carrito
+  ms-carrito:
+    image: maliburger/ms-carrito:1.0
+    container_name: ms-carrito
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+    command: ["--eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/", "--eureka.instance.preferIpAddress=true"]
+    networks:
+      - maliburger-net
+    volumes:
+      - "/Users/karensita/Desktop/wallet/Wallet_Maliburgir:/Users/karensita/Desktop/wallet/Wallet_Maliburgir"
+
+  # 7. Microservicio de Ventas
+  ms-venta:
+    image: maliburger/ms-venta:1.0
+    container_name: ms-venta
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-server
+    command: ["--eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/", "--eureka.instance.preferIpAddress=true"]
+    networks:
+      - maliburger-net
+    volumes:
+      - "/Users/karensita/Desktop/wallet/Wallet_Maliburgir:/Users/karensita/Desktop/wallet/Wallet_Maliburgir"
+
+# Creamos una red virtual para que todos se vean entre sí
+networks:
+  maliburger-net:
+    driver: bridge

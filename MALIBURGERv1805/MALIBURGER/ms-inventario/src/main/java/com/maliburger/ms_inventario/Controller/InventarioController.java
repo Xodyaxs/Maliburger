@@ -7,6 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+// Imports de HATEOAS limpios
+import org.springframework.hateoas.EntityModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 @RestController
 @RequestMapping("/api/inventario")
 @RequiredArgsConstructor
@@ -14,25 +18,41 @@ public class InventarioController {
 
     private final InventarioService inventarioService;
 
-    //consulta el stock de las hamburguesas
     @GetMapping("/{idBurger}")
-    public ResponseEntity<Inventario> obtenerStock(@PathVariable Long idBurger) {
-        return ResponseEntity.ok(inventarioService.obtenerStock(idBurger));
+    public ResponseEntity<EntityModel<Inventario>> obtenerStock(@PathVariable Long idBurger) {
+        Inventario inventario = inventarioService.obtenerStock(idBurger);
+
+        EntityModel<Inventario> modelo = EntityModel.of(inventario);
+        modelo.add(linkTo(methodOn(InventarioController.class).obtenerStock(idBurger)).withSelfRel());
+
+        // Usamos null en los parámetros para que solo tome la referencia del método
+        modelo.add(linkTo(methodOn(InventarioController.class).agregarStock(null)).withRel("agregar-stock"));
+        modelo.add(linkTo(methodOn(InventarioController.class).descontarStock(null)).withRel("descontar-stock"));
+
+        return ResponseEntity.ok(modelo);
     }
 
-    //se agregan hamburguesas al stock
     @PostMapping("/agregar")
-    public ResponseEntity<Inventario> agregarStock(@RequestBody DTOrequest request) {
-        return ResponseEntity.ok(inventarioService.agregarStock(request.getIdBurger(), request.getCantidad()));
+    public ResponseEntity<EntityModel<Inventario>> agregarStock(@RequestBody DTOrequest request) {
+        Inventario inventario = inventarioService.agregarStock(request.getIdBurger(), request.getCantidad());
+
+        EntityModel<Inventario> modelo = EntityModel.of(inventario);
+        modelo.add(linkTo(methodOn(InventarioController.class).obtenerStock(request.getIdBurger())).withRel("ver-stock"));
+
+        return ResponseEntity.ok(modelo);
     }
 
-    //Se descuentan hamburguesas luego de una venta
     @PostMapping("/descontar")
-    public ResponseEntity<Inventario> descontarStock(@RequestBody DTOrequest request) {
+    public ResponseEntity<EntityModel<Inventario>> descontarStock(@RequestBody DTOrequest request) {
         try {
-            return ResponseEntity.ok(inventarioService.descontarStock(request.getIdBurger(), request.getCantidad()));
+            Inventario inventario = inventarioService.descontarStock(request.getIdBurger(), request.getCantidad());
+
+            EntityModel<Inventario> modelo = EntityModel.of(inventario);
+            modelo.add(linkTo(methodOn(InventarioController.class).obtenerStock(request.getIdBurger())).withRel("ver-stock"));
+
+            return ResponseEntity.ok(modelo);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().build();
         }
     }
 }
